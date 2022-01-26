@@ -47,6 +47,16 @@
             "properties": {
                 "publicAccess": "None"
             }
+        },
+        // Databkicks
+        {
+            "name": "etlDatabricks",
+            "type": "Microsoft.Databricks/workspaces",
+            "apiVersion": "2018-04-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "managedResourceGroupId": ""
+            }
         }
 
     ],
@@ -56,7 +66,7 @@
             "type": "Object",
             "value": "[reference(resourceId('Microsoft.DataLakeStore/accounts', parameters('adlStorage')))]"
         },
-        
+
         "adlHotContainer": {
             "type": "Object",
             "value": "value"
