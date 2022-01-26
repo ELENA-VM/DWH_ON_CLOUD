@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adlStorage": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the ADLStorage"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('adlStorage')]",
+            "type": "Microsoft.DataLakeStore/accounts",
+            "apiVersion": "2016-11-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "newTier": "Consumption",
+                "encryptionState": "Enabled"
+            }
+        }
+    ],
+
+    "outputs": {
+        "adlStorage": {
+            "type": "Object",
+            "value": "[reference(resourceId('Microsoft.DataLakeStore/accounts', parameters('adlStorage')))]"
+        }
+    }
+}
