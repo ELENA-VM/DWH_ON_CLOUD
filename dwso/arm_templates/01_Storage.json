@@ -7,11 +7,25 @@
             "metadata": {
                 "description": "Name of the ADLStorage"
             }
+        },
+        "adlHotContainer": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Hot Container"
+            }
+        },
+        "adlCoolContainer": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Cool Container"
+            }
         }
     },
     "functions": [],
     "variables": {},
     "resources": [
+        // check account - datalake 2 tiers - containers
+        // Datalake account
         {
             "name": "[parameters('adlStorage')]",
             "type": "Microsoft.DataLakeStore/accounts",
@@ -21,13 +35,31 @@
                 "newTier": "Consumption",
                 "encryptionState": "Enabled"
             }
+        },
+        // Datalake hot container
+        {
+            "name": "[parameters('adlHotContainer')]",
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-04-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.DataLakeStore/accounts', parameters('adlStorage'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
         }
+
     ],
 
     "outputs": {
         "adlStorage": {
             "type": "Object",
             "value": "[reference(resourceId('Microsoft.DataLakeStore/accounts', parameters('adlStorage')))]"
+        },
+        
+        "adlHotContainer": {
+            "type": "Object",
+            "value": "value"
         }
     }
 }
