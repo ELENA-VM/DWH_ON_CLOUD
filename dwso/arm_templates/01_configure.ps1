@@ -9,6 +9,6 @@ New-AzResourceGroup `
 # 4
   New-AzResourceGroupDeployment `
     -Name 'new-storage-deployment' `
-    -ResourceGroupName rg_etl_2 `
+    -ResourceGroupName rg_etl `
     -TemplateFile '02_storage_account_template.json'
 

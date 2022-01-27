@@ -3,14 +3,17 @@
     "contentVersion": "1.0.0.0",
     "parameters": {},
     "functions": [],
-    "variables": {},
+    "variables": {
+        "storageaccount": "adlstoragemev",
+        "storagecontainer": "storagecontainermev"
+    },
     "resources": [
         {
-            "name": "adlstoragemevtest",
+            "name": "[variables('storageaccount')]",
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2021-04-01",
+            "apiVersion": "2021-06-01",
             "tags": {
-                "displayName": "adlstoragemevtest"
+                "displayName": "[variables('storageaccount')]"
             },
             "location": "[resourceGroup().location]",
             "kind": "StorageV2",
@@ -18,7 +21,20 @@
                 "name": "Standard_LRS",
                 "tier": "Standard"
             }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(variables('storageaccount'), '/default/', variables('storagecontainer'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageaccount'))]"
+            ],
+            "properties": {
+                "publicAccess": "Container"
+            }
         }
+
+
     ],
     "outputs": {}
 }
