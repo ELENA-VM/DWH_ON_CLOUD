@@ -1,0 +1,5 @@
+DROP SEQUENCE IF EXISTS wrk_tests_seq;
+
+CREATE SEQUENCE wrk_tests_seq
+  START WITH 1
+  INCREMENT BY 1;
