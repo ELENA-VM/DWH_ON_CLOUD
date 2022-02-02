@@ -1,0 +1,140 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "AdminPassword": {
+            "type": "securestring"
+        }
+    },
+    "functions": [],
+    "variables": {
+        "SqlServerName": "etlbooksalessqlserver",
+        "AdminUserName": "EtlAdmin",
+        "SqlDBName_1": "SA_RETAIL",
+        "SqlDBName_2": "SA_STOCK",
+        "SqlDBName_3": "BL_CL",
+        "SqlDBName_4": "BL_3NF",
+        "SqlDBName_5": "BL_DM"
+    },
+    "resources": [
+        {
+            "name": "[variables('SqlServerName')]",
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('SqlServerName')]"
+            },
+            "properties": {
+                "administratorLogin": "[variables('AdminUserName')]",
+                "administratorLoginPassword": "[parameters('AdminPassword')]"
+            },
+            "resources": [
+                {
+                    "type": "firewallRules",
+                    "apiVersion": "2014-04-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', variables('SqlServerName'))]"
+                    ],
+                    "location": "[resourceGroup().location]",
+                    "name": "AllowAllWindowsAzureIps",
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "255.255.255.255"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "[format('{0}/{1}', variables('SqlServerName'), variables('SqlDBName_1'))]",
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('SqlDBName_1')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', variables('SqlServerName'))]"
+            ],
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "edition": "Basic",
+                "maxSizeBytes": "1073741824",
+                "requestedServiceObjectiveName": "Basic"
+            }
+        },
+        {
+            "name": "[format('{0}/{1}', variables('SqlServerName'), variables('SqlDBName_2'))]",
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('SqlDBName_2')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', variables('SqlServerName'))]"
+            ],
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "edition": "Basic",
+                "maxSizeBytes": "1073741824",
+                "requestedServiceObjectiveName": "Basic"
+            }
+        },
+        {
+            "name": "[format('{0}/{1}', variables('SqlServerName'), variables('SqlDBName_3'))]",
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('SqlDBName_3')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', variables('SqlServerName'))]"
+            ],
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "edition": "Basic",
+                "maxSizeBytes": "1073741824",
+                "requestedServiceObjectiveName": "Basic"
+            }
+        },
+        {
+            "name": "[format('{0}/{1}', variables('SqlServerName'), variables('SqlDBName_4'))]",
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('SqlDBName_4')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', variables('SqlServerName'))]"
+            ],
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "edition": "Basic",
+                "maxSizeBytes": "1073741824",
+                "requestedServiceObjectiveName": "Basic"
+            }
+        },
+        {
+            "name": "[format('{0}/{1}', variables('SqlServerName'), variables('SqlDBName_5'))]",
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('SqlDBName_5')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', variables('SqlServerName'))]"
+            ],
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "edition": "Basic",
+                "maxSizeBytes": "1073741824",
+                "requestedServiceObjectiveName": "Basic"
+            }
+        }
+    ],
+    "outputs": {}
+}
