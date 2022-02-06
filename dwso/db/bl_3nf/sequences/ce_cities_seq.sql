@@ -1,0 +1,5 @@
+DROP SEQUENCE ce_cities_seq;
+
+CREATE SEQUENCE ce_cities_seq
+  START WITH 1
+  INCREMENT BY 1;

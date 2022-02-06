@@ -1,0 +1,5 @@
+DROP SEQUENCE ce_stores_seq;
+
+CREATE SEQUENCE ce_stores_seq
+  START WITH 1
+  INCREMENT BY 1;

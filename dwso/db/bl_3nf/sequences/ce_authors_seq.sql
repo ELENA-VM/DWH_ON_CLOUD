@@ -1,0 +1,5 @@
+DROP SEQUENCE ce_authors_seq;
+
+CREATE SEQUENCE ce_authors_seq
+  START WITH 1
+  INCREMENT BY 1;
