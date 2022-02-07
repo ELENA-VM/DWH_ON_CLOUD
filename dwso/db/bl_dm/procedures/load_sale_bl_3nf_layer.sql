@@ -32,4 +32,12 @@ BEGIN
            JOIN dim_type_payments dm_tp ON ces.type_payment_surr_id = dm_tp.type_payment_id
     WHERE ces.date_sale >= @p_date_period
       AND ces.date_sale < DATEADD(month, 1, @p_date_period);
+
+	DECLARE @SqlStr varchar = ' ALTER TABLE wrk_ex_dm_fct_sales SWITCH PARTITION ' 
+							+ CAST(year(@p_date_period) AS VARCHAR) + IIF(len(month(@p_date_period))= 1, '0', '') 
+							+ CAST(month(@p_date_period) as varchar) + '01 TO fct_sales PARTITION '
+							+ CAST(year(@p_date_period) AS VARCHAR) + IIF(len(month(@p_date_period))= 1, '0', '') 
+							+ CAST(month(@p_date_period) as varchar) + '01 TO fct_sales PARTITION '+ '01 WITH (TRUNCATE_TARGET = ON);'
+	
+	EXEC @SqlStr;
 END;
