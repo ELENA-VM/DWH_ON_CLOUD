@@ -1,7 +1,7 @@
 CREATE OR ALTER PROCEDURE ld_ce_sales_by_part 
 AS   
 BEGIN
-	DECLARE @p_start_date date = GETDATE(),
+	DECLARE @p_start_date date = DATEADD(YEAR, 2, GETDATE()),
 			@p_end_date date =  GETDATE(),
 			@tmp_date date = GETDATE();  
 	 
