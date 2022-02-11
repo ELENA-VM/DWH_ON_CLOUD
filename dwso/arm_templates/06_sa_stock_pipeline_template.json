@@ -1,0 +1,62 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+        "variables": {
+        "factoryName": "etlbooksalesdatafactory",
+        "linkedservice": "OutputSQL_SA_STOCK"
+    },
+    "resources": [
+        {
+            "name": "[concat(variables('factoryName'), '/sa_stock_pipeline')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "1 ld_sa_customers_stock",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_customers_stock]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "2 ld_sa_transaction_stock",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_transaction_stock]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {},
+                    "cancelAfter": {}
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-02-07T21:25:59Z"
+            },
+            "dependsOn": []
+        }
+    ]
+}

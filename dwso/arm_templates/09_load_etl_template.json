@@ -1,0 +1,977 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', 'etlbooksalesdatafactory')]",
+        "factoryName": "etlbooksalesdatafactory",
+        "linkedservice_SA_RETAIL": "OutputSQL_SA_RETAIL",
+        "linkedservice_SA_STOCK": "OutputSQL_SA_STOCK",
+        "linkedservice_BL_3NF": "OutputSQL_BL_3NF",
+        "linkedservice_BL_DM": "OutputSQL_BL_DM"
+    },
+    "resources": [
+        {
+            "name": "[concat(variables('factoryName'), '/load_etl')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Load sa_retail",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sa_retail_pipeline",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "Load sa_stock",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Load sa_retail",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sa_stock_pipeline",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "Load bl_3nf",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Load sa_stock",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "bl_3nf_pipeline",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "load bl_dm",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Load bl_3nf",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "bl_dm_pipeline",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {},
+                    "cancelAfter": {}
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-02-08T22:38:50Z"
+            },
+            "dependsOn": [ "[concat(variables('factoryId'), '/pipelines/sa_retail_pipeline')]", "[concat(variables('factoryId'), '/pipelines/sa_stock_pipeline')]", "[concat(variables('factoryId'), '/pipelines/bl_3nf_pipeline')]", "[concat(variables('factoryId'), '/pipelines/bl_dm_pipeline')]" ]
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/sa_retail_pipeline')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "1_ld_sa_type_stores",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_type_stores]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "3 ld_sa_stores",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_stores]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "4 ld_sa_posts",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_posts]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "2 ld_sa_type_payments",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_type_payments]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "5 ld_sa_regions",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_regions]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "6 ld_sa_countries",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_countries]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "7 ld_sa_cities",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_cities]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "8 ld_sa_address",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_address]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "9 ld_sa_employees",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_employees]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "10 ld_sa_authors",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_authors]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "11 ld_sa_books",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_books]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "12 ld_sa_customers_retail",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_customers_retail]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "13 ld_sa_transaction_retail",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_transaction_retail]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_RETAIL')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {},
+                    "cancelAfter": {}
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-02-07T21:21:47Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/sa_stock_pipeline')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "1 ld_sa_customers_stock",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_customers_stock]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_STOCK')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "2 ld_sa_transaction_stock",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_transaction_stock]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_SA_STOCK')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {},
+                    "cancelAfter": {}
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-02-07T21:25:59Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/bl_3nf_pipeline')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ld_ce_type_payments",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_type_payments]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_type_stores",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_type_stores]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_posts",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_posts]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_incr_ce_stores",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_type_stores",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_incr_ce_stores]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_incr_ce_employees",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_posts",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_incr_ce_employees]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_regions",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_regions]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_countries",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_regions",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_countries]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_cities",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_countries",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_cities]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_addresses",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_cities",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_addresses]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_customers_from_retail",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_addresses",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_customers_from_retail]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_customers_from_stock",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_addresses",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_customers_from_stock]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_categories",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_categories]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_sub_categories",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_categories",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_sub_categories]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_authors",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_sub_categories",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_authors]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_books",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_authors",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_books]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_book_author",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_books",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_book_author]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_incr_sale_from_sa_layers",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_ce_type_payments",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_incr_ce_stores",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_ce_addresses",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_ce_books",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_ce_customers_from_retail",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_ce_customers_from_stock",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_incr_ce_employees",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_incr_sale_from_sa_layers]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_3NF')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {},
+                    "cancelAfter": {}
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-02-07T22:46:21Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/bl_dm_pipeline')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ld_dim_type_payments",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_dim_type_payments]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_DM')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_dim_stores",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_dim_stores]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_DM')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_dim_employees",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_dim_employees]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_DM')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_dim_addresses",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_dim_addresses]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_DM')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_dim_books",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_dim_books]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_DM')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_dim_customers",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_dim_customers]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_DM')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ld_ce_sales_by_part",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ld_dim_type_payments",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_dim_stores",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_dim_employees",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_dim_addresses",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_dim_books",
+                                "dependencyConditions": [ "Succeeded" ]
+                            },
+                            {
+                                "activity": "ld_dim_customers",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_ce_sales_by_part]" },
+                        "linkedServiceName": {
+                            "referenceName": "[variables('linkedservice_BL_DM')]",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {},
+                    "cancelAfter": {}
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-02-07T23:33:11Z"
+            },
+            "dependsOn": []
+        }
+    ]
+}

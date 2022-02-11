@@ -16,4 +16,33 @@ New-AzResourceGroup `
   -Name 'new-sql-server-deployment' `
   -ResourceGroupName rg_etl `
   -TemplateFile '03_sql_server_template.json'
-
+# 6
+New-AzResourceGroupDeployment `
+-Name 'new-data-factory-deployment' `
+-ResourceGroupName rg_etl `
+-TemplateFile '04_data_factory_template.json'
+# 7
+New-AzResourceGroupDeployment `
+-Name 'new-data-factory-pipeline-sa-retail-deployment' `
+-ResourceGroupName rg_etl `
+-TemplateFile '05_sa_retail_pipeline_template.json'
+# 8
+New-AzResourceGroupDeployment `
+-Name 'new-data-factory-pipeline-sa-stock-deployment' `
+-ResourceGroupName rg_etl `
+-TemplateFile '06_sa_stock_pipeline_template.json'
+# 9
+New-AzResourceGroupDeployment `
+-Name 'new-data-factory-pipeline-bl-3nf-deployment' `
+-ResourceGroupName rg_etl `
+-TemplateFile '07_bl_3nf_pipeline_template.json'
+# 10
+New-AzResourceGroupDeployment `
+-Name 'new-data-factory-pipeline-bl-dm-deployment' `
+-ResourceGroupName rg_etl `
+-TemplateFile '08_bl_dm_pipeline_template.json'
+# 11
+New-AzResourceGroupDeployment `
+-Name 'new-data-factory-pipeline-etl-load-deployment' `
+-ResourceGroupName rg_etl `
+-TemplateFile '09_load_etl_template.json'

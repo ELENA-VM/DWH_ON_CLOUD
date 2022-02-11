@@ -1,0 +1,114 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlPassword": {
+            "type": "securestring"
+        }
+    },
+    "variables": {
+        "dataFactoryName": "etlbooksalesdatafactory",
+        "storageLinkedServiceName": "InputBlob",
+        "storageAccountName": "adlstoragebooksales",
+        "storageAccountKey": "udK4XOzZpucgYHZqH3ArPBqJV7syiwhYENT9XFYgHQKR/zetdzWRgbGKqxPEyMQN2MOE/iSKNqt7x4bXKOpvSw==",
+        "sqlLinkedService_SA_RETAIL": "OutputSQL_SA_RETAIL",
+        "sqlLinkedService_SA_STOCK": "OutputSQL_SA_STOCK",
+        "sqlLinkedService_BL_3NF": "OutputSQL_BL_3NF",
+        "sqlLinkedService_BL_DM": "OutputSQL_BL_DM",
+        "sqlServerName": "etlbooksalessqlservertest",
+        "sqlDBName_SA_RETAIL": "SA_RETAIL",
+        "sqlDBName_SA_STOCK": "SA_STOCK",
+        "sqlDBName_BL_3NF": "BL_3NF",
+        "sqlDBName_BL_DM": "BL_DM",
+        "sqlUserId": "EtlAdmin"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DataFactory/factories",
+            "apiVersion": "2018-06-01",
+            "name": "[variables('dataFactoryName')]",
+            "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "resources": [
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('storageLinkedServiceName')]",
+                    "apiVersion": "2018-06-01",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureStorage",
+                        "description": "Azure Storage Linked Service",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',variables('storageAccountKey'))]"
+                        }
+                    }
+                },
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('sqlLinkedService_SA_RETAIL')]",
+                    "apiVersion": "2018-06-01",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureSqlDatabase",
+                        "description": "Azure SQL linked service",
+                        "typeProperties": {
+                            "connectionString": "[concat('Data Source=tcp:', variables('sqlServerName'), '.database.windows.net,1433;Initial Catalog=', variables('sqlDBName_SA_RETAIL'), ';Integrated Security=False;User ID=', variables('sqlUserId'), ';Password=', parameters('sqlPassword'), ';Connect Timeout=30;Encrypt=True')]"
+                        }
+                    }
+                },
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('sqlLinkedService_SA_STOCK')]",
+                    "apiVersion": "2018-06-01",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureSqlDatabase",
+                        "description": "Azure SQL linked service",
+                        "typeProperties": {
+                            "connectionString": "[concat('Data Source=tcp:', variables('sqlServerName'), '.database.windows.net,1433;Initial Catalog=', variables('sqlDBName_SA_STOCK'), ';Integrated Security=False;User ID=', variables('sqlUserId'), ';Password=', parameters('sqlPassword'), ';Connect Timeout=30;Encrypt=True')]"
+                        }
+                    }
+                },
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('sqlLinkedService_BL_3NF')]",
+                    "apiVersion": "2018-06-01",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureSqlDatabase",
+                        "description": "Azure SQL linked service",
+                        "typeProperties": {
+                            "connectionString": "[concat('Data Source=tcp:', variables('sqlServerName'), '.database.windows.net,1433;Initial Catalog=', variables('sqlDBName_BL_3NF'), ';Integrated Security=False;User ID=', variables('sqlUserId'), ';Password=', parameters('sqlPassword'), ';Connect Timeout=30;Encrypt=True')]"
+                        }
+                    }
+                },
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('sqlLinkedService_BL_DM')]",
+                    "apiVersion": "2018-06-01",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureSqlDatabase",
+                        "description": "Azure SQL linked service",
+                        "typeProperties": {
+                            "connectionString": "[concat('Data Source=tcp:', variables('sqlServerName'), '.database.windows.net,1433;Initial Catalog=', variables('sqlDBName_BL_DM'), ';Integrated Security=False;User ID=', variables('sqlUserId'), ';Password=', parameters('sqlPassword'), ';Connect Timeout=30;Encrypt=True')]"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "outputs": {}
+}
