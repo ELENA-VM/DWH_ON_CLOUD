@@ -4,16 +4,16 @@
     "parameters": {},
     "functions": [],
     "variables": {
-        "storageaccount": "adlstoragemev",
-        "storagecontainer": "storagecontainermev"
+        "StorageAccount": "adlstoragebooksales",
+        "StorageContainer": "input"
     },
     "resources": [
         {
-            "name": "[variables('storageaccount')]",
+            "name": "[variables('StorageAccount')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2021-06-01",
             "tags": {
-                "displayName": "[variables('storageaccount')]"
+                "displayName": "[variables('StorageAccount')]"
             },
             "location": "[resourceGroup().location]",
             "kind": "StorageV2",
@@ -25,16 +25,14 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2021-06-01",
-            "name": "[concat(variables('storageaccount'), '/default/', variables('storagecontainer'))]",
+            "name": "[concat(variables('StorageAccount'), '/default/', variables('StorageContainer'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageaccount'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('StorageAccount'))]"
             ],
             "properties": {
                 "publicAccess": "Container"
             }
         }
-
-
     ],
     "outputs": {}
 }

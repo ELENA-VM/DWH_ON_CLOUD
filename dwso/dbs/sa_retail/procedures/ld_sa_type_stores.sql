@@ -7,7 +7,7 @@ BEGIN
 		TRUNCATE TABLE ext_type_stores;
 
 		BULK INSERT ext_type_stores
-		FROM 'storagecontainermev/type_stores.csv'
+		FROM 'input/type_stores.csv'
 		WITH (DATA_SOURCE = 'AzureBlobStorageDataSourceETL',
 			  FIRSTROW = 2,
 			  FORMAT = 'CSV');

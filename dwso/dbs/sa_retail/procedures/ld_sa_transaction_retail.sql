@@ -5,7 +5,7 @@ BEGIN
 		TRUNCATE TABLE ext_transaction_retail;
 
 		BULK INSERT ext_transaction_retail
-		FROM 'storagecontainermev/b_transaction_600000.csv'
+		FROM 'input/b_transaction_600000.csv'
 		WITH (DATA_SOURCE = 'AzureBlobStorageDataSourceETL',
 			  FIRSTROW = 2,
 			  FORMAT = 'CSV');

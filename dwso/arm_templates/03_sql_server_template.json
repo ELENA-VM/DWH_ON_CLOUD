@@ -12,9 +12,8 @@
         "AdminUserName": "EtlAdmin",
         "SqlDBName_1": "SA_RETAIL",
         "SqlDBName_2": "SA_STOCK",
-        "SqlDBName_3": "BL_CL",
-        "SqlDBName_4": "BL_3NF",
-        "SqlDBName_5": "BL_DM"
+        "SqlDBName_3": "BL_3NF",
+        "SqlDBName_4": "BL_DM"
     },
     "resources": [
         {
@@ -106,24 +105,6 @@
             "location": "[resourceGroup().location]",
             "tags": {
                 "displayName": "[variables('SqlDBName_4')]"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Sql/servers', variables('SqlServerName'))]"
-            ],
-            "properties": {
-                "collation": "SQL_Latin1_General_CP1_CI_AS",
-                "edition": "Basic",
-                "maxSizeBytes": "1073741824",
-                "requestedServiceObjectiveName": "Basic"
-            }
-        },
-        {
-            "name": "[format('{0}/{1}', variables('SqlServerName'), variables('SqlDBName_5'))]",
-            "type": "Microsoft.Sql/servers/databases",
-            "apiVersion": "2014-04-01",
-            "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "[variables('SqlDBName_5')]"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Sql/servers', variables('SqlServerName'))]"

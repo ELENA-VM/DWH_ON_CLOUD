@@ -5,7 +5,7 @@ BEGIN
 		TRUNCATE TABLE ext_regions;
 
 		BULK INSERT ext_regions
-		FROM 'storagecontainermev/region.csv'
+		FROM 'input/region.csv'
 		WITH (DATA_SOURCE = 'AzureBlobStorageDataSourceETL',
 			  FIRSTROW = 2,
 			  FORMAT = 'CSV');
