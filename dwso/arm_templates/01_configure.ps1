@@ -55,4 +55,4 @@ New-AzResourceGroupDeployment `
 New-AzResourceGroupDeployment `
 -Name 'new-logic-app-deployment' `
 -ResourceGroupName rg_etl `
--TemplateFile '10_logic_app_template.json'
+-TemplateFile '11_logic_app_template.json'
