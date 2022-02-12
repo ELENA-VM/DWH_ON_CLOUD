@@ -2,8 +2,8 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "variables": {
-        "factoryId": "[concat('Microsoft.DataFactory/factories/', 'etlbooksalesdatafactorytest')]",
-        "factoryName": "etlbooksalesdatafactorytest",
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', 'etlbooksalesdatafactory')]",
+        "factoryName": "etlbooksalesdatafactory",
         "bloblinkedservice": "ls_blob_storage",
         "linkedservice": "OutputSQL_SA_RETAIL"
     },

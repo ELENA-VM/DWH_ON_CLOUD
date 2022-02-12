@@ -2,10 +2,12 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "variables": {
-        "factoryId": "[concat('Microsoft.DataFactory/factories/', 'etlbooksalesdatafactorytest')]",
-        "factoryName": "etlbooksalesdatafactorytest",
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', 'etlbooksalesdatafactory')]",
+        "factoryName": "etlbooksalesdatafactory",
         "bloblinkedservice": "ls_blob_storage_2",
-        "linkedservice": "OutputSQL_SA_RETAIL"
+        "linkedservice": "OutputSQL_SA_RETAIL",
+        "storageAccountName": "adlstoragebooksales",
+        "storageAccountKey": "udK4XOzZpucgYHZqH3ArPBqJV7syiwhYENT9XFYgHQKR/zetdzWRgbGKqxPEyMQN2MOE/iSKNqt7x4bXKOpvSw=="
     },
     "resources": [
         {
@@ -51,6 +53,7 @@
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
+                    "firstRowAsHeader": true,
                     "quoteChar": "\""
                 }
                 // For remaining properties, see Dataset objects
@@ -104,11 +107,10 @@
                 // For remaining properties, see Dataset objects
             }
         },
-
-
-
         {
-            "name": "sa_retail_pipeline_part_2",
+            "name": "[concat(variables('factoryName'), '/sa_retail_pipeline_part_2')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
             "properties": {
                 "activities": [
                     {
@@ -147,9 +149,7 @@
                         "dependsOn": [
                             {
                                 "activity": "Check if file author exists",
-                                "dependencyConditions": [
-                                    "Succeeded"
-                                ]
+                                "dependencyConditions": [ "Succeeded" ]
                             }
                         ],
                         "userProperties": [],
@@ -164,9 +164,7 @@
                                     "type": "Wait",
                                     "dependsOn": [],
                                     "userProperties": [],
-                                    "typeProperties": {
-                                        "waitTimeInSeconds": 1
-                                    }
+                                    "typeProperties": { "waitTimeInSeconds": 1 }
                                 }
                             ],
                             "ifTrueActivities": [
@@ -182,9 +180,7 @@
                                         "secureInput": false
                                     },
                                     "userProperties": [],
-                                    "typeProperties": {
-                                        "storedProcedureName": "[dbo].[ld_sa_authors]"
-                                    },
+                                    "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_authors]" },
                                     "linkedServiceName": {
                                         "referenceName": "[variables('linkedservice')]",
                                         "type": "LinkedServiceReference"
@@ -265,7 +261,7 @@
                                     },
                                     "userProperties": [],
                                     "typeProperties": {
-                                        "storedProcedureName": "[dbo].[ld_sa_books]"
+                                        "storedProcedureName": "[[dbo].[ld_sa_books]"
                                     },
                                     "linkedServiceName": {
                                         "referenceName": "[variables('linkedservice')]",
@@ -347,7 +343,7 @@
                                     },
                                     "userProperties": [],
                                     "typeProperties": {
-                                        "storedProcedureName": "[dbo].[ld_sa_customers_retail]"
+                                        "storedProcedureName": "[[dbo].[ld_sa_customers_retail]"
                                     },
                                     "linkedServiceName": {
                                         "referenceName": "[variables('linkedservice')]",
@@ -429,7 +425,7 @@
                                     },
                                     "userProperties": [],
                                     "typeProperties": {
-                                        "storedProcedureName": "[dbo].[ld_sa_transaction_retail]"
+                                        "storedProcedureName": "[[dbo].[ld_sa_transaction_retail]"
                                     },
                                     "linkedServiceName": {
                                         "referenceName": "[variables('linkedservice')]",
@@ -439,11 +435,11 @@
                             ]
                         }
                     }
-                ],
-                "annotations": [],
-                "lastPublishTime": "2022-02-12T17:10:23Z"
+
+                ]
+
             },
-            "type": "Microsoft.DataFactory/factories/pipelines"
+            "dependsOn": [ "[concat(variables('factoryId'), '/datasets/ds_transaction_retail')]", "[concat(variables('factoryId'), '/datasets/ds_customer')]", "[concat(variables('factoryId'), '/datasets/ds_book')]", "[concat(variables('factoryId'), '/datasets/ds_author')]" ]
         }
     ]
 }

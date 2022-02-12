@@ -7,7 +7,7 @@
         }
     },
     "variables": {
-        "dataFactoryName": "etlbooksalesdatafactorytest",
+        "dataFactoryName": "etlbooksalesdatafactory",
         "storageLinkedServiceName": "InputBlob",
         "storage_linked_name": "ls_blob_storage",
         "storage_linked_name_2": "ls_blob_storage_2",
@@ -17,7 +17,7 @@
         "sqlLinkedService_SA_STOCK": "OutputSQL_SA_STOCK",
         "sqlLinkedService_BL_3NF": "OutputSQL_BL_3NF",
         "sqlLinkedService_BL_DM": "OutputSQL_BL_DM",
-        "sqlServerName": "etlbooksalessqlservertest",
+        "sqlServerName": "etlbooksalessqlserver",
         "sqlDBName_SA_RETAIL": "SA_RETAIL",
         "sqlDBName_SA_STOCK": "SA_STOCK",
         "sqlDBName_BL_3NF": "BL_3NF",
@@ -79,7 +79,6 @@
                         }
                     }
                 },
-
                 {
                     "type": "linkedservices",
                     "name": "[variables('sqlLinkedService_SA_RETAIL')]",
