@@ -35,7 +35,7 @@ New-AzResourceGroupDeployment `
 New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-sa-stock-deployment' `
 -ResourceGroupName rg_etl `
--TemplateFile '06_sa_stock_pipeline_template.json'
+-TemplateFile '07_sa_stock_pipeline_template.json'
 # 10
 New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-bl-3nf-deployment' `

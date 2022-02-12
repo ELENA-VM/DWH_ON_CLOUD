@@ -28,6 +28,7 @@
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
+                    "firstRowAsHeader": true,
                     "quoteChar": "\""
                 }
                 // For remaining properties, see Dataset objects
@@ -53,6 +54,7 @@
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
+                    "firstRowAsHeader": true,
                     "quoteChar": "\""
                 }
                 // For remaining properties, see Dataset objects
@@ -78,6 +80,7 @@
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
+                    "firstRowAsHeader": true,
                     "quoteChar": "\""
                 }
                 // For remaining properties, see Dataset objects
@@ -103,6 +106,7 @@
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
+                    "firstRowAsHeader": true,
                     "quoteChar": "\""
                 }
                 // For remaining properties, see Dataset objects
@@ -128,6 +132,7 @@
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
+                    "firstRowAsHeader": true,
                     "quoteChar": "\""
                 }
                 // For remaining properties, see Dataset objects
@@ -153,6 +158,7 @@
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
+                    "firstRowAsHeader": true,
                     "quoteChar": "\""
                 }
                 // For remaining properties, see Dataset objects
@@ -178,6 +184,7 @@
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
+                    "firstRowAsHeader": true,
                     "quoteChar": "\""
                 }
                 // For remaining properties, see Dataset objects
@@ -203,6 +210,7 @@
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
+                    "firstRowAsHeader": true,
                     "quoteChar": "\""
                 }
                 // For remaining properties, see Dataset objects
@@ -228,6 +236,7 @@
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
+                    "firstRowAsHeader": true,
                     "quoteChar": "\""
                 }
                 // For remaining properties, see Dataset objects
