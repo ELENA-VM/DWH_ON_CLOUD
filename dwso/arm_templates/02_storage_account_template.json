@@ -5,7 +5,8 @@
     "functions": [],
     "variables": {
         "StorageAccount": "adlstoragebooksales",
-        "StorageContainer": "input"
+        "StorageContainerIn": "input",
+        "StorageContainerOut": "output"
     },
     "resources": [
         {
@@ -25,7 +26,18 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2021-06-01",
-            "name": "[concat(variables('StorageAccount'), '/default/', variables('StorageContainer'))]",
+            "name": "[concat(variables('StorageAccount'), '/default/', variables('StorageContainerIn'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('StorageAccount'))]"
+            ],
+            "properties": {
+                "publicAccess": "Container"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(variables('StorageAccount'), '/default/', variables('StorageContainerOut'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('StorageAccount'))]"
             ],

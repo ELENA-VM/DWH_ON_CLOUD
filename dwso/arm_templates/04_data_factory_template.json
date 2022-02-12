@@ -7,8 +7,10 @@
         }
     },
     "variables": {
-        "dataFactoryName": "etlbooksalesdatafactory",
+        "dataFactoryName": "etlbooksalesdatafactorytest",
         "storageLinkedServiceName": "InputBlob",
+        "storage_linked_name": "ls_blob_storage",
+        "storage_linked_name_2": "ls_blob_storage_2",
         "storageAccountName": "adlstoragebooksales",
         "storageAccountKey": "udK4XOzZpucgYHZqH3ArPBqJV7syiwhYENT9XFYgHQKR/zetdzWRgbGKqxPEyMQN2MOE/iSKNqt7x4bXKOpvSw==",
         "sqlLinkedService_SA_RETAIL": "OutputSQL_SA_RETAIL",
@@ -43,10 +45,41 @@
                         "type": "AzureStorage",
                         "description": "Azure Storage Linked Service",
                         "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';EndpointSuffix=core.windows.net;AccountKey=',variables('storageAccountKey'))]"
+                        }
+                    }
+                },
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('storage_linked_name')]",
+                    "apiVersion": "2018-06-01",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureStorage",
+                        "description": "Azure Storage Linked Service",
+                        "typeProperties": {
                             "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',variables('storageAccountKey'))]"
                         }
                     }
                 },
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('storage_linked_name_2')]",
+                    "apiVersion": "2018-06-01",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureStorage",
+                        "description": "Azure Storage Linked Service",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',variables('storageAccountKey'))]"
+                        }
+                    }
+                },
+
                 {
                     "type": "linkedservices",
                     "name": "[variables('sqlLinkedService_SA_RETAIL')]",

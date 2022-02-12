@@ -1,0 +1,449 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', 'etlbooksalesdatafactorytest')]",
+        "factoryName": "etlbooksalesdatafactorytest",
+        "bloblinkedservice": "ls_blob_storage_2",
+        "linkedservice": "OutputSQL_SA_RETAIL"
+    },
+    "resources": [
+        {
+            "name": "[concat(variables('factoryName'), '/ds_author')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "author.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_book')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "book.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_customer')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "customer.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_transaction_retail')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "b_transaction_600000.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+
+
+
+        {
+            "name": "sa_retail_pipeline_part_2",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Check if file author exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_author",
+                                "type": "DatasetReference"
+                            },
+                            "fieldList": [
+                                "exists"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "If Condition author",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file author exists",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file author exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File author does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "waitTimeInSeconds": 1
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "10 ld_sa_authors",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[dbo].[ld_sa_authors]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file books exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_book",
+                                "type": "DatasetReference"
+                            },
+                            "fieldList": [
+                                "exists"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "If Condition book",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file books exists",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file books exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File book does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "waitTimeInSeconds": 1
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "11 ld_sa_books",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[dbo].[ld_sa_books]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file customer exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_customer",
+                                "type": "DatasetReference"
+                            },
+                            "fieldList": [
+                                "exists"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "If Condition customer retail",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file customer exists",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file customer exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File customer does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "waitTimeInSeconds": 1
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "12 ld_sa_customers_retail",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[dbo].[ld_sa_customers_retail]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file transaction retail exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_transaction_retail",
+                                "type": "DatasetReference"
+                            },
+                            "fieldList": [
+                                "exists"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "If Condition transaction retail",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file transaction retail exists",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file transaction retail exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File transaction retail does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "waitTimeInSeconds": 1
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "13 ld_sa_transaction_retail",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[dbo].[ld_sa_transaction_retail]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "annotations": [],
+                "lastPublishTime": "2022-02-12T17:10:23Z"
+            },
+            "type": "Microsoft.DataFactory/factories/pipelines"
+        }
+    ]
+}

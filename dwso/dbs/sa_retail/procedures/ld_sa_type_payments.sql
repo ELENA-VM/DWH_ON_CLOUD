@@ -1,6 +1,8 @@
 CREATE OR ALTER PROCEDURE ld_sa_type_payments AS
 BEGIN
 	BEGIN TRY
+		BEGIN TRANSACTION;
+
 		TRUNCATE TABLE ext_type_payments;
 
 		BULK INSERT ext_type_payments

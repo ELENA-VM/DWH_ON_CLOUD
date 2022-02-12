@@ -23,26 +23,36 @@ New-AzResourceGroupDeployment `
 -TemplateFile '04_data_factory_template.json'
 # 7
 New-AzResourceGroupDeployment `
--Name 'new-data-factory-pipeline-sa-retail-deployment' `
+-Name 'new-data-factory-pipeline-sa-retail-part-1-deployment' `
 -ResourceGroupName rg_etl `
--TemplateFile '05_sa_retail_pipeline_template.json'
+-TemplateFile '05_sa_retail_pipeline_part_1_template.json'
 # 8
+New-AzResourceGroupDeployment `
+-Name 'new-data-factory-pipeline-sa-retail-part-2-deployment' `
+-ResourceGroupName rg_etl `
+-TemplateFile '06_sa_retail_pipeline_part_2_template.json'
+# 9
 New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-sa-stock-deployment' `
 -ResourceGroupName rg_etl `
 -TemplateFile '06_sa_stock_pipeline_template.json'
-# 9
+# 10
 New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-bl-3nf-deployment' `
 -ResourceGroupName rg_etl `
 -TemplateFile '07_bl_3nf_pipeline_template.json'
-# 10
+# 11
 New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-bl-dm-deployment' `
 -ResourceGroupName rg_etl `
 -TemplateFile '08_bl_dm_pipeline_template.json'
-# 11
+# 12
 New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-etl-load-deployment' `
 -ResourceGroupName rg_etl `
 -TemplateFile '09_load_etl_template.json'
+# 13
+New-AzResourceGroupDeployment `
+-Name 'new-logic-app-deployment' `
+-ResourceGroupName rg_etl `
+-TemplateFile '10_logic_app_template.json'

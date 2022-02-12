@@ -1,0 +1,901 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', 'etlbooksalesdatafactorytest')]",
+        "factoryName": "etlbooksalesdatafactorytest",
+        "bloblinkedservice": "ls_blob_storage",
+        "linkedservice": "OutputSQL_SA_RETAIL"
+    },
+
+    "resources": [
+        {
+            "name": "[concat(variables('factoryName'), '/ds_address')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "address.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_city')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "city.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_countries')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "country.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_employee')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "employee.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_post')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "post.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_region')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "region.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_stores')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "stores.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_type_payments')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "type_payment.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_type_stores')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "type_stores.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/sa_retail_pipeline_part_1')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Check if file type_stores exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_type_stores",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [ "exists" ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": { "type": "DelimitedTextReadSettings" }
+                        }
+                    },
+                    {
+                        "name": "If Condition type_stores",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file type_stores exists",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file type_stores exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File type_stores does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": { "waitTimeInSeconds": 1 }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "1_ld_sa_type_stores",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_type_stores]" },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file type_payments exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_type_payments",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [ "exists" ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": { "type": "DelimitedTextReadSettings" }
+                        }
+                    },
+                    {
+                        "name": "If Condition type_payments",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file type_payments exists",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file type_payments exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File type_payment does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": { "waitTimeInSeconds": 1 }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "2 ld_sa_type_payments",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_type_payments]" },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file stores exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_stores",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [ "exists" ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": { "type": "DelimitedTextReadSettings" }
+                        }
+                    },
+                    {
+                        "name": "If Condition stores",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file stores exists",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file stores exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File stores does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": { "waitTimeInSeconds": 1 }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "3 ld_sa_stores",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_stores]" },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file post exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_post",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [ "exists" ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": { "type": "DelimitedTextReadSettings" }
+                        }
+                    },
+                    {
+                        "name": "If Condition post",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file post exists",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file post exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File post does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": { "waitTimeInSeconds": 1 }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "4 ld_sa_posts",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_posts]" },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file region exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_region",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [ "exists" ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": { "type": "DelimitedTextReadSettings" }
+                        }
+                    },
+                    {
+                        "name": "If Condition region",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file region exists",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file region exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File region does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": { "waitTimeInSeconds": 1 }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "5 ld_sa_regions",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_regions]" },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file country exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_countries",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [ "exists" ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": { "type": "DelimitedTextReadSettings" }
+                        }
+                    },
+                    {
+                        "name": "If Condition country",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file country exists",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file country exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File coutry does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": { "waitTimeInSeconds": 1 }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "6 ld_sa_countries",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_countries]" },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file city exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_city",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [ "exists" ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": { "type": "DelimitedTextReadSettings" }
+                        }
+                    },
+                    {
+                        "name": "If Condition city",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file city exists",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file city exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File city does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": { "waitTimeInSeconds": 1 }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "7 ld_sa_cities",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_cities]" },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file address exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_address",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [ "exists" ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": { "type": "DelimitedTextReadSettings" }
+                        }
+                    },
+                    {
+                        "name": "If Condition address",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file address exists",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file address exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File address does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": { "waitTimeInSeconds": 1 }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "8 ld_sa_address",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_address]" },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file employee exists",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_employee",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [ "exists" ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": { "type": "DelimitedTextReadSettings" }
+                        }
+                    },
+                    {
+                        "name": "If Condition employee",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file employee exists",
+                                "dependencyConditions": [ "Succeeded" ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file employee exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File employee does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": { "waitTimeInSeconds": 1 }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "9 ld_sa_employees",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_employees]" },
+                                    "linkedServiceName": {
+                                        "referenceName": "[variables('linkedservice')]",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {},
+                    "cancelAfter": {}
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-02-11T21:13:05Z"
+            },
+            "dependsOn": [ "[concat(variables('factoryId'), '/datasets/ds_type_stores')]", "[concat(variables('factoryId'), '/datasets/ds_type_payments')]", "[concat(variables('factoryId'), '/datasets/ds_stores')]", "[concat(variables('factoryId'), '/datasets/ds_post')]", "[concat(variables('factoryId'), '/datasets/ds_region')]", "[concat(variables('factoryId'), '/datasets/ds_countries')]", "[concat(variables('factoryId'), '/datasets/ds_city')]", "[concat(variables('factoryId'), '/datasets/ds_address')]", "[concat(variables('factoryId'), '/datasets/ds_employee')]" ]
+        }
+    ]
+}
