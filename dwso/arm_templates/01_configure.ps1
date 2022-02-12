@@ -40,17 +40,17 @@ New-AzResourceGroupDeployment `
 New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-bl-3nf-deployment' `
 -ResourceGroupName rg_etl `
--TemplateFile '07_bl_3nf_pipeline_template.json'
+-TemplateFile '08_bl_3nf_pipeline_template.json'
 # 11
 New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-bl-dm-deployment' `
 -ResourceGroupName rg_etl `
--TemplateFile '08_bl_dm_pipeline_template.json'
+-TemplateFile '09_bl_dm_pipeline_template.json'
 # 12
 New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-etl-load-deployment' `
 -ResourceGroupName rg_etl `
--TemplateFile '09_load_etl_template.json'
+-TemplateFile '10_load_etl_template.json'
 # 13
 New-AzResourceGroupDeployment `
 -Name 'new-logic-app-deployment' `
