@@ -1,11 +1,64 @@
 {
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-        "variables": {
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', 'etlbooksalesdatafactory')]",
         "factoryName": "etlbooksalesdatafactory",
+        "bloblinkedservice": "ls_blob_storage_2",
         "linkedservice": "OutputSQL_SA_STOCK"
     },
     "resources": [
+        {
+            "name": "[concat(variables('factoryName'), '/ds_customer_stock')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "customer_stock.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+        {
+            "name": "[concat(variables('factoryName'), '/ds_transaction_stock')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "parameters": {},
+                    "referenceName": "[variables('bloblinkedservice')]",
+                    "type": "LinkedServiceReference"
+                },
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "b_transaction_400000.csv",
+                        "container": "input"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                }
+                // For remaining properties, see Dataset objects
+            }
+        },
+
         {
             "name": "[concat(variables('factoryName'), '/sa_stock_pipeline')]",
             "type": "Microsoft.DataFactory/factories/pipelines",
@@ -13,8 +66,8 @@
             "properties": {
                 "activities": [
                     {
-                        "name": "1 ld_sa_customers_stock",
-                        "type": "SqlServerStoredProcedure",
+                        "name": "Check if file customer stock exists",
+                        "type": "GetMetadata",
                         "dependsOn": [],
                         "policy": {
                             "timeout": "7.00:00:00",
@@ -24,15 +77,79 @@
                             "secureInput": false
                         },
                         "userProperties": [],
-                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_customers_stock]" },
-                        "linkedServiceName": {
-                            "referenceName": "[variables('linkedservice')]",
-                            "type": "LinkedServiceReference"
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_customer_stock",
+                                "type": "DatasetReference"
+                            },
+                            "fieldList": [
+                                "exists"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
                         }
                     },
                     {
-                        "name": "2 ld_sa_transaction_stock",
-                        "type": "SqlServerStoredProcedure",
+                        "name": "If Condition customer stock",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file customer stock exists",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file customer stock exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File customer stock does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "waitTimeInSeconds": 1
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "1 ld_sa_customers_stock",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[dbo].[ld_sa_customers_stock]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "OutputSQL_SA_STOCK",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Check if file transaction stock exists",
+                        "type": "GetMetadata",
                         "dependsOn": [],
                         "policy": {
                             "timeout": "7.00:00:00",
@@ -42,10 +159,74 @@
                             "secureInput": false
                         },
                         "userProperties": [],
-                        "typeProperties": { "storedProcedureName": "[[dbo].[ld_sa_transaction_stock]" },
-                        "linkedServiceName": {
-                            "referenceName": "[variables('linkedservice')]",
-                            "type": "LinkedServiceReference"
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "ds_transaction_stock",
+                                "type": "DatasetReference"
+                            },
+                            "fieldList": [
+                                "exists"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "If Condition transaction stock",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Check if file transaction stock exists",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@activity('Check if file transaction stock exists').output.exists",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "File transaction stock does not exists",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "waitTimeInSeconds": 1
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "2 ld_sa_transaction_stock",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[dbo].[ld_sa_transaction_stock]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "OutputSQL_SA_STOCK",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ]
                         }
                     }
                 ],
