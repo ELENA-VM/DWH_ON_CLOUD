@@ -6,7 +6,8 @@
     "variables": {
         "StorageAccount": "adlstoragebooksales",
         "StorageContainerIn": "input",
-        "StorageContainerOut": "output"
+        "StorageContainerOut": "output",
+        "StorageContainerLog": "log"
     },
     "resources": [
         {
@@ -38,6 +39,17 @@
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2021-06-01",
             "name": "[concat(variables('StorageAccount'), '/default/', variables('StorageContainerOut'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('StorageAccount'))]"
+            ],
+            "properties": {
+                "publicAccess": "Container"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(variables('StorageAccount'), '/default/', variables('StorageContainerLog'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('StorageAccount'))]"
             ],

@@ -280,7 +280,7 @@
                                     "referenceName": "ls_blob_storage_2",
                                     "type": "LinkedServiceReference"
                                 },
-                                "path": "input"
+                                "path": "log"
                             },
                             "enableLogging": true,
                             "storeSettings": {
