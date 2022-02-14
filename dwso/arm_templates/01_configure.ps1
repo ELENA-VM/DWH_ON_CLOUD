@@ -48,6 +48,16 @@ New-AzResourceGroupDeployment `
 -TemplateFile '09_bl_dm_pipeline_template.json'
 # 12
 New-AzResourceGroupDeployment `
+-Name 'new-data-factory-pipeline-move-blob-deployment' `
+-ResourceGroupName rg_etl `
+-TemplateFile '10_move_blob_pipeline_template.json'
+
+
+
+
+
+
+New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-etl-load-deployment' `
 -ResourceGroupName rg_etl `
 -TemplateFile '10_load_etl_template.json'
