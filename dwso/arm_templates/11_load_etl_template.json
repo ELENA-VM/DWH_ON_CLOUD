@@ -3,7 +3,8 @@
     "contentVersion": "1.0.0.0",
     "parameters": {},
     "variables": {
-        "factoryName": "etlbooksalesdatafactory"
+        "factoryName": "etlbooksalesdatafactory",
+        "UrlLogicApp": "https://prod-133.westeurope.logic.azure.com:443/workflows/4aaefa2bfdb9454db600e18503c854af/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=56mJngCx8oiehfiMcrLKbaC7Ym_hBd10K5as2qy7UZg"
     },
     "resources": [
         {
@@ -106,7 +107,27 @@
                         }
                     },
                     {
-                        "name": "Web email notification",
+                        "name": "Execute move blob",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Web send notification",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "move_blob_pipeline",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true
+                        }
+                    },
+                    {
+                        "name": "Web send notification",
                         "type": "WebActivity",
                         "dependsOn": [
                             {
@@ -125,17 +146,45 @@
                         },
                         "userProperties": [],
                         "typeProperties": {
-                            "url": "https://prod-136.westeurope.logic.azure.com:443/workflows/32e8d455debf4699b0b62c38b24c3968/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TJntG5nu-0maLTXwylNocYjEgd8G50iljbKXmXGXgl0",
+                            "url":"[variables('UrlLogicApp')]",
                             "method": "POST",
-                            "body": "Load ETL data factory executed successfully!"
+                            "body": {
+                                "message": "Pipeline with run ID @{pipeline().RunId} has been run successfully.",
+                                "dataFactoryName": "@{pipeline().DataFactory}",
+                                "pipelineName": "@{pipeline().Pipeline}"
+                            }
                         }
                     },
                     {
-                        "name": "Web email faild notification",
+                        "name": "Web send faild notification",
                         "type": "WebActivity",
                         "dependsOn": [
                             {
                                 "activity": "Execute bl_dm",
+                                "dependencyConditions": [
+                                    "Failed"
+                                ]
+                            },
+                            {
+                                "activity": "Execute bl_3nf",
+                                "dependencyConditions": [
+                                    "Failed"
+                                ]
+                            },
+                            {
+                                "activity": "Execute sa_stock",
+                                "dependencyConditions": [
+                                    "Failed"
+                                ]
+                            },
+                            {
+                                "activity": "Execute sa_retail part 2",
+                                "dependencyConditions": [
+                                    "Failed"
+                                ]
+                            },
+                            {
+                                "activity": "Execute sa_retail part 1",
                                 "dependencyConditions": [
                                     "Failed"
                                 ]
@@ -150,29 +199,13 @@
                         },
                         "userProperties": [],
                         "typeProperties": {
-                            "url": "https://prod-136.westeurope.logic.azure.com:443/workflows/32e8d455debf4699b0b62c38b24c3968/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TJntG5nu-0maLTXwylNocYjEgd8G50iljbKXmXGXgl0",
+                            "url": "[variables('UrlLogicApp')]",
                             "method": "POST",
-                            "body": "Load ETL data factory executed with errors."
-                        }
-                    },
-                    {
-                        "name": "Execute move blob",
-                        "type": "ExecutePipeline",
-                        "dependsOn": [
-                            {
-                                "activity": "Web email notification",
-                                "dependencyConditions": [
-                                    "Succeeded"
-                                ]
+                            "body": {
+                                "message": "Pipeline with run ID @{pipeline().RunId} has been run with error.",
+                                "dataFactoryName": "@{pipeline().DataFactory}",
+                                "pipelineName": "@{pipeline().Pipeline}"
                             }
-                        ],
-                        "userProperties": [],
-                        "typeProperties": {
-                            "pipeline": {
-                                "referenceName": "move_blob_pipeline",
-                                "type": "PipelineReference"
-                            },
-                            "waitOnCompletion": true
                         }
                     }
                 ]

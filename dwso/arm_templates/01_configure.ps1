@@ -58,9 +58,9 @@ New-AzResourceGroupDeployment `
  -TemplateFile '11_load_etl_template.json'
 # 14
 New-AzResourceGroupDeployment `
- -Name 'new-logic-app-process-pipeline-deployment' `
+ -Name 'new-logic-app-send-email-pipeline-deployment' `
  -ResourceGroupName rg_etl `
- -TemplateFile '12_logic_app_process_pipeline_template.json'
+ -TemplateFile '12_logic_app_send_email_pipeline_template.json'
  # 15
 New-AzResourceGroupDeployment `
 -Name 'new-logic-app-run-etl-pipeline-deployment' `

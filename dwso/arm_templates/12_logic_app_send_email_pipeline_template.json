@@ -2,7 +2,7 @@
    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
    "contentVersion": "1.0.0.0",
    "variables": {
-      "LogicAppName": "ProcessPipeline"
+      "LogicAppName": "SendEmailProcessEtl"
    },
    "functions": [],
    "resources": [
@@ -10,11 +10,11 @@
          // Start logic app resource definition
          "properties": {
             "provisioningState": "Succeeded",
-            "createdTime": "2022-02-13T22:55:30.6379907Z",
-            "changedTime": "2022-02-13T23:06:17.0170167Z",
+            "createdTime": "2022-02-14T21:04:16.3292364Z",
+            "changedTime": "2022-02-14T21:08:10.7969293Z",
             "state": "Enabled",
-            "version": "08585568133084699368",
-            "accessEndpoint": "https://prod-136.westeurope.logic.azure.com:443/workflows/32e8d455debf4699b0b62c38b24c3968",
+            "version": "08585567339947004344",
+            "accessEndpoint": "https://prod-133.westeurope.logic.azure.com:443/workflows/4aaefa2bfdb9454db600e18503c854af",
             "definition": {
                "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
                "contentVersion": "1.0.0.0",
@@ -29,7 +29,23 @@
                      "type": "Request",
                      "kind": "Http",
                      "inputs": {
-                        "schema": {}
+                        "schema": {
+                           "properties": {
+                              "dataFactoryName": {
+                                 "type": "string"
+                              },
+                              "message": {
+                                 "type": "string"
+                              },
+                              "pipelineName": {
+                                 "type": "string"
+                              },
+                              "receiver": {
+                                 "type": "string"
+                              }
+                           },
+                           "type": "object"
+                        }
                      }
                   }
                },
@@ -39,7 +55,7 @@
                      "type": "ApiConnection",
                      "inputs": {
                         "body": {
-                           "Body": "<p>@{triggerBody()}</p>",
+                           "Body": "<p>Message: @{triggerBody()?['message']}<br>\nPipeline: @{triggerBody()?['pipelineName']}<br>\nDataFactoryName:@{triggerBody()?['dataFactoryName']}<br>\n@{triggerBody()}</p>",
                            "Subject": "ETL load",
                            "To": "Elena.Mozhenkova@gmail.com"
                         },
@@ -157,16 +173,7 @@
                }
             }
          },
-         // {
-         //    "state": "<Enabled or Disabled>",
-         //    "integrationAccount": {
-         //       "id": "[parameters('LogicAppIntegrationAccount')]" // Template parameter reference
-         //    },
-         //    "definition": {<workflow-definition>},
-         //    "parameters": {<workflow-definition-parameter-values>},
-         //    "accessControl": {},
-         //    "runtimeConfiguration": {}
-         // },
+
          "name": "[variables('LogicAppName')]", // Template parameter reference
          "type": "Microsoft.Logic/workflows",
          "location": "[resourceGroup().location]",
