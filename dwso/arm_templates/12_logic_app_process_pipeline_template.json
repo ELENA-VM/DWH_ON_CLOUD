@@ -1,0 +1,180 @@
+{
+   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+   "contentVersion": "1.0.0.0",
+   "variables": {
+      "LogicAppName": "ProcessPipeline"
+   },
+   "functions": [],
+   "resources": [
+      {
+         // Start logic app resource definition
+         "properties": {
+            "provisioningState": "Succeeded",
+            "createdTime": "2022-02-13T22:55:30.6379907Z",
+            "changedTime": "2022-02-13T23:06:17.0170167Z",
+            "state": "Enabled",
+            "version": "08585568133084699368",
+            "accessEndpoint": "https://prod-136.westeurope.logic.azure.com:443/workflows/32e8d455debf4699b0b62c38b24c3968",
+            "definition": {
+               "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+               "contentVersion": "1.0.0.0",
+               "parameters": {
+                  "$connections": {
+                     "defaultValue": {},
+                     "type": "Object"
+                  }
+               },
+               "triggers": {
+                  "manual": {
+                     "type": "Request",
+                     "kind": "Http",
+                     "inputs": {
+                        "schema": {}
+                     }
+                  }
+               },
+               "actions": {
+                  "Send_an_email_(V2)": {
+                     "runAfter": {},
+                     "type": "ApiConnection",
+                     "inputs": {
+                        "body": {
+                           "Body": "<p>@{triggerBody()}</p>",
+                           "Subject": "ETL load",
+                           "To": "Elena.Mozhenkova@gmail.com"
+                        },
+                        "host": {
+                           "connection": {
+                              "name": "@parameters('$connections')['outlook']['connectionId']"
+                           }
+                        },
+                        "method": "post",
+                        "path": "/v2/Mail"
+                     }
+                  }
+               },
+               "outputs": {}
+            },
+            "parameters": {
+               "$connections": {
+                  "value": {
+                     "outlook": {
+                        "connectionId": "/subscriptions/dfdb8a04-dc4d-4f42-8652-acba6c543c60/resourceGroups/rg_etl/providers/Microsoft.Web/connections/outlook",
+                        "connectionName": "outlook",
+                        "id": "/subscriptions/dfdb8a04-dc4d-4f42-8652-acba6c543c60/providers/Microsoft.Web/locations/westeurope/managedApis/outlook"
+                     }
+                  }
+               }
+            },
+            "endpointsConfiguration": {
+               "workflow": {
+                  "outgoingIpAddresses": [
+                     {
+                        "address": "40.68.222.65"
+                     },
+                     {
+                        "address": "40.68.209.23"
+                     },
+                     {
+                        "address": "13.95.147.65"
+                     },
+                     {
+                        "address": "23.97.218.130"
+                     },
+                     {
+                        "address": "51.144.182.201"
+                     },
+                     {
+                        "address": "23.97.211.179"
+                     },
+                     {
+                        "address": "104.45.9.52"
+                     },
+                     {
+                        "address": "23.97.210.126"
+                     },
+                     {
+                        "address": "13.69.71.160"
+                     },
+                     {
+                        "address": "13.69.71.161"
+                     },
+                     {
+                        "address": "13.69.71.162"
+                     },
+                     {
+                        "address": "13.69.71.163"
+                     },
+                     {
+                        "address": "13.69.71.164"
+                     },
+                     {
+                        "address": "13.69.71.165"
+                     },
+                     {
+                        "address": "13.69.71.166"
+                     },
+                     {
+                        "address": "13.69.71.167"
+                     }
+                  ],
+                  "accessEndpointIpAddresses": [
+                     {
+                        "address": "13.95.155.53"
+                     },
+                     {
+                        "address": "52.174.54.218"
+                     },
+                     {
+                        "address": "52.174.49.6"
+                     }
+                  ]
+               },
+               "connector": {
+                  "outgoingIpAddresses": [
+                     {
+                        "address": "52.174.88.118"
+                     },
+                     {
+                        "address": "40.91.208.65"
+                     },
+                     {
+                        "address": "13.69.64.208/28"
+                     },
+                     {
+                        "address": "13.69.71.192/27"
+                     },
+                     {
+                        "address": "13.93.36.78"
+                     },
+                     {
+                        "address": "20.86.93.32/27"
+                     },
+                     {
+                        "address": "20.86.93.64/28"
+                     }
+                  ]
+               }
+            }
+         },
+         // {
+         //    "state": "<Enabled or Disabled>",
+         //    "integrationAccount": {
+         //       "id": "[parameters('LogicAppIntegrationAccount')]" // Template parameter reference
+         //    },
+         //    "definition": {<workflow-definition>},
+         //    "parameters": {<workflow-definition-parameter-values>},
+         //    "accessControl": {},
+         //    "runtimeConfiguration": {}
+         // },
+         "name": "[variables('LogicAppName')]", // Template parameter reference
+         "type": "Microsoft.Logic/workflows",
+         "location": "[resourceGroup().location]",
+         "apiVersion": "2016-06-01",
+         "dependsOn": [
+         ]
+      }
+      // End logic app resource definition
+   ],
+   "outputs": {}
+}

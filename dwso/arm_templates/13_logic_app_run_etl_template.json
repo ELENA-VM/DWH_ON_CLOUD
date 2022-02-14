@@ -1,0 +1,192 @@
+{
+   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+   "contentVersion": "1.0.0.0",
+   "variables": {
+      "LogicAppName": "RunETL"
+   },
+   "functions": [],
+   "resources": [
+      {
+         // Start logic app resource definition
+         "properties": {
+            "provisioningState": "Succeeded",
+            "createdTime": "2022-02-11T20:18:53.2483177Z",
+            "changedTime": "2022-02-14T12:00:33.265701Z",
+            "state": "Enabled",
+            "version": "08585567668522215745",
+            "accessEndpoint": "https://prod-221.westeurope.logic.azure.com:443/workflows/2b6ecb3b2b884d3790eac0020f551656",
+            "definition": {
+               "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+               "contentVersion": "1.0.0.0",
+               "parameters": {
+                  "$connections": {
+                     "defaultValue": {},
+                     "type": "Object"
+                  }
+               },
+               "triggers": {
+                  "When_a_blob_is_added_or_modified_(properties_only)_(V2)": {
+                     "recurrence": {
+                        "frequency": "Minute",
+                        "interval": 3
+                     },
+                     "evaluatedRecurrence": {
+                        "frequency": "Minute",
+                        "interval": 3
+                     },
+                     "splitOn": "@triggerBody()",
+                     "type": "ApiConnection",
+                     "inputs": {
+                        "host": {
+                           "connection": {
+                              "name": "@parameters('$connections')['azureblob']['connectionId']"
+                           }
+                        },
+                        "method": "get",
+                        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('AccountNameFromSettings'))}/triggers/batch/onupdatedfile",
+                        "queries": {
+                           "checkBothCreatedAndModifiedDateTime": false,
+                           "folderId": "input",
+                           "maxFileCount": 10
+                        }
+                     }
+                  }
+               },
+               "actions": {
+                  "Create_a_pipeline_run": {
+                     "runAfter": {},
+                     "type": "ApiConnection",
+                     "inputs": {
+                        "host": {
+                           "connection": {
+                              "name": "@parameters('$connections')['azuredatafactory']['connectionId']"
+                           }
+                        },
+                        "method": "post",
+                        "path": "/subscriptions/@{encodeURIComponent('dfdb8a04-dc4d-4f42-8652-acba6c543c60')}/resourcegroups/@{encodeURIComponent('rg_etl')}/providers/Microsoft.DataFactory/factories/@{encodeURIComponent('etlbooksalesdatafactory')}/pipelines/@{encodeURIComponent('load_etl')}/CreateRun",
+                        "queries": {
+                           "x-ms-api-version": "2017-09-01-preview"
+                        }
+                     }
+                  }
+               },
+               "outputs": {}
+            },
+            "parameters": {
+               "$connections": {
+                  "value": {
+                     "azureblob": {
+                        "connectionId": "/subscriptions/dfdb8a04-dc4d-4f42-8652-acba6c543c60/resourceGroups/rg_etl/providers/Microsoft.Web/connections/azureblob",
+                        "connectionName": "azureblob",
+                        "id": "/subscriptions/dfdb8a04-dc4d-4f42-8652-acba6c543c60/providers/Microsoft.Web/locations/westeurope/managedApis/azureblob"
+                     },
+                     "azuredatafactory": {
+                        "connectionId": "/subscriptions/dfdb8a04-dc4d-4f42-8652-acba6c543c60/resourceGroups/rg_etl/providers/Microsoft.Web/connections/azuredatafactory",
+                        "connectionName": "azuredatafactory",
+                        "id": "/subscriptions/dfdb8a04-dc4d-4f42-8652-acba6c543c60/providers/Microsoft.Web/locations/westeurope/managedApis/azuredatafactory"
+                     }
+                  }
+               }
+            },
+            "endpointsConfiguration": {
+               "workflow": {
+                  "outgoingIpAddresses": [
+                     {
+                        "address": "40.68.222.65"
+                     },
+                     {
+                        "address": "40.68.209.23"
+                     },
+                     {
+                        "address": "13.95.147.65"
+                     },
+                     {
+                        "address": "23.97.218.130"
+                     },
+                     {
+                        "address": "51.144.182.201"
+                     },
+                     {
+                        "address": "23.97.211.179"
+                     },
+                     {
+                        "address": "104.45.9.52"
+                     },
+                     {
+                        "address": "23.97.210.126"
+                     },
+                     {
+                        "address": "13.69.71.160"
+                     },
+                     {
+                        "address": "13.69.71.161"
+                     },
+                     {
+                        "address": "13.69.71.162"
+                     },
+                     {
+                        "address": "13.69.71.163"
+                     },
+                     {
+                        "address": "13.69.71.164"
+                     },
+                     {
+                        "address": "13.69.71.165"
+                     },
+                     {
+                        "address": "13.69.71.166"
+                     },
+                     {
+                        "address": "13.69.71.167"
+                     }
+                  ],
+                  "accessEndpointIpAddresses": [
+                     {
+                        "address": "13.95.155.53"
+                     },
+                     {
+                        "address": "52.174.54.218"
+                     },
+                     {
+                        "address": "52.174.49.6"
+                     }
+                  ]
+               },
+               "connector": {
+                  "outgoingIpAddresses": [
+                     {
+                        "address": "52.174.88.118"
+                     },
+                     {
+                        "address": "40.91.208.65"
+                     },
+                     {
+                        "address": "13.69.64.208/28"
+                     },
+                     {
+                        "address": "13.69.71.192/27"
+                     },
+                     {
+                        "address": "13.93.36.78"
+                     },
+                     {
+                        "address": "20.86.93.32/27"
+                     },
+                     {
+                        "address": "20.86.93.64/28"
+                     }
+                  ]
+               }
+            }
+         },
+         "name": "[variables('LogicAppName')]",
+         "type": "Microsoft.Logic/workflows",
+         "location": "[resourceGroup().location]",
+         "apiVersion": "2016-06-01",
+         "dependsOn": [
+         ]
+      }
+      // End logic app resource definition
+   ],
+   "outputs": {}
+}
