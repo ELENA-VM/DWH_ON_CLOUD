@@ -1,0 +1,184 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {
+        "factoryName": "etlbooksalesdatafactory"
+    },
+    "resources": [
+        {
+            "name": "[concat(variables('factoryName'), '/load_etl')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Execute sa_retail part 1",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sa_retail_pipeline_part_1",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true
+                        }
+                    },
+                    {
+                        "name": "Execute sa_retail part 2",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Execute sa_retail part 1",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sa_retail_pipeline_part_2",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true
+                        }
+                    },
+                    {
+                        "name": "Execute sa_stock",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Execute sa_retail part 2",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sa_stock_pipeline",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true
+                        }
+                    },
+                    {
+                        "name": "Execute bl_3nf",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Execute sa_stock",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "bl_3nf_pipeline",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true
+                        }
+                    },
+                    {
+                        "name": "Execute bl_dm",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Execute bl_3nf",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "bl_dm_pipeline",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true
+                        }
+                    },
+                    {
+                        "name": "Web email notification",
+                        "type": "WebActivity",
+                        "dependsOn": [
+                            {
+                                "activity": "Execute bl_dm",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "url": "https://prod-136.westeurope.logic.azure.com:443/workflows/32e8d455debf4699b0b62c38b24c3968/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TJntG5nu-0maLTXwylNocYjEgd8G50iljbKXmXGXgl0",
+                            "method": "POST",
+                            "body": "Load ETL data factory executed successfully!"
+                        }
+                    },
+                    {
+                        "name": "Web email faild notification",
+                        "type": "WebActivity",
+                        "dependsOn": [
+                            {
+                                "activity": "Execute bl_dm",
+                                "dependencyConditions": [
+                                    "Failed"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "url": "https://prod-136.westeurope.logic.azure.com:443/workflows/32e8d455debf4699b0b62c38b24c3968/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TJntG5nu-0maLTXwylNocYjEgd8G50iljbKXmXGXgl0",
+                            "method": "POST",
+                            "body": "Load ETL data factory executed with errors."
+                        }
+                    },
+                    {
+                        "name": "Execute move blob",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Web email notification",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "move_blob_pipeline",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true
+                        }
+                    }
+                ]
+
+            },
+            "dependsOn": []
+        }
+    ]
+}

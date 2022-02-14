@@ -51,17 +51,14 @@ New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-move-blob-deployment' `
 -ResourceGroupName rg_etl `
 -TemplateFile '10_move_blob_pipeline_template.json'
-
-
-
-
-
-
+# 13
 New-AzResourceGroupDeployment `
 -Name 'new-data-factory-pipeline-etl-load-deployment' `
 -ResourceGroupName rg_etl `
--TemplateFile '10_load_etl_template.json'
-# 13
+-TemplateFile '11_load_etl_template.json'
+
+
+# 14
 New-AzResourceGroupDeployment `
 -Name 'new-logic-app-deployment' `
 -ResourceGroupName rg_etl `
