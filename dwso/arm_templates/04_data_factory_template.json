@@ -12,7 +12,7 @@
         "storage_linked_name": "ls_blob_storage",
         "storage_linked_name_2": "ls_blob_storage_2",
         "storageAccountName": "adlstoragebooksales",
-        "storageAccountKey": "udK4XOzZpucgYHZqH3ArPBqJV7syiwhYENT9XFYgHQKR/zetdzWRgbGKqxPEyMQN2MOE/iSKNqt7x4bXKOpvSw==",
+        "storageAccountKey": "",
         "sqlLinkedService_SA_RETAIL": "OutputSQL_SA_RETAIL",
         "sqlLinkedService_SA_STOCK": "OutputSQL_SA_STOCK",
         "sqlLinkedService_BL_3NF": "OutputSQL_BL_3NF",

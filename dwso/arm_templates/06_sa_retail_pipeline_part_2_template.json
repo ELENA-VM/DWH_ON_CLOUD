@@ -7,7 +7,7 @@
         "bloblinkedservice": "ls_blob_storage_2",
         "linkedservice": "OutputSQL_SA_RETAIL",
         "storageAccountName": "adlstoragebooksales",
-        "storageAccountKey": "udK4XOzZpucgYHZqH3ArPBqJV7syiwhYENT9XFYgHQKR/zetdzWRgbGKqxPEyMQN2MOE/iSKNqt7x4bXKOpvSw=="
+        "storageAccountKey": ""
     },
     "resources": [
         {
