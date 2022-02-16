@@ -13,9 +13,10 @@ BEGIN
 			   vs.invoice, GETDATE(), GETDATE()
 		FROM v_incr_sales vs;
     
-		UPDATE prm_mta_incremental_load
-		SET previous_loaded_date = GETDATE()
-		WHERE sa_table_name = 'SA_TRANSACTION';    
+		IF @@ROWCOUNT > 0
+			UPDATE prm_mta_incremental_load
+			SET previous_loaded_date = GETDATE()
+			WHERE sa_table_name = 'SA_TRANSACTION';    
 		COMMIT TRANSACTION;
 	END TRY
 	BEGIN CATCH
