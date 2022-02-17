@@ -43,11 +43,11 @@ BEGIN
 	JOIN sys.partition_functions AS f ON s.function_id = f.function_id  
 	LEFT JOIN sys.partition_range_values AS r ON f.function_id = r.function_id and r.boundary_id = p.partition_number  
 	WHERE i.type <= 1 AND t.name = 'wrk_ex_dm_fct_sales' 
-	  AND convert(varchar, r.value, 112) = convert(varchar, @p_date_period, 112);
+	  AND r.value >= @p_date_period
+	  AND r.value < DATEADD(month, 1, @p_date_period);
 
 	TRUNCATE TABLE fct_sales WITH (PARTITIONS (@NumPart TO @NumPart));
 
-	ALTER TABLE wrk_ex_dm_fct_sales SWITCH PARTITION @NumPart TO fct_sales PARTITION @NumPart;					
-
+	ALTER TABLE wrk_ex_dm_fct_sales SWITCH PARTITION @NumPart TO fct_sales PARTITION @NumPart;	
 END;
 
