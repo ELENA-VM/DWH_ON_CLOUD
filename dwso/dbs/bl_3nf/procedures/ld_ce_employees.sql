@@ -1,6 +1,5 @@
 CREATE OR ALTER PROCEDURE ld_ce_employees AS 
 BEGIN
-
     MERGE INTO ce_employees target              
     USING ( SELECT sae.EMPLOYEE_ID,
                    sae.FIRST_NAME,

@@ -26,10 +26,10 @@ BEGIN
 					STORE_SURR_ID, FIRST_NAME, LAST_NAME, POST_SURR_ID, update_dt, insert_dt) 
 			VALUES (default, source.EMPLOYEE_ID, 'RETAIL', 'SA_EMPLOYEES',
 					source.store_id, source.FIRST_NAME, source.LAST_NAME, source.post_id, GETDATE(), GETDATE());
-
-		UPDATE prm_mta_incremental_load
-		SET previous_loaded_date = GETDATE()
-		WHERE sa_table_name = 'SA_EMPLOYEES';
+		if @@ROWCOUNT > 0
+			UPDATE prm_mta_incremental_load
+			SET previous_loaded_date = GETDATE()
+			WHERE sa_table_name = 'SA_EMPLOYEES';
 		COMMIT TRANSACTION;
 	END TRY
 	BEGIN CATCH
